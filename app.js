@@ -9,8 +9,7 @@ var port = process.env.PORT || 3000;
 var oneDay = 86400000;
 
 var roomdata = require('roomdata');
-var roomsList = [];
-
+var maxUsersInGroup = 3;
 app.use('/js/jquery.min.js', static(__dirname + '/bower_components/jquery/dist/jquery.min.js'));
 app.use('/js/jquery.min.map', static(__dirname + '/bower_components/jquery/dist/jquery.min.map'));
 app.use(static(__dirname + '/public'));
@@ -38,13 +37,24 @@ io.sockets.on("connection", function (socket) {
         console.log('szukajPokoju');
         
         //sprawdz czy istnieje wolny pokoj
-        for(var roomId in roomsList) {
-            console.log(roomsList[roomId]);
-        }
+        //console.log(io.nsps['/'].adapter.rooms);
+        //sprawdzenie z wykorzystaniem biblioteki roomdata
+         for(var roomId in roomdata.rooms) {
+            var usersInGroup = roomdata.rooms[roomId]['users'].length;
+            if(usersInGroup < maxUsersInGroup){
+                roomdata.joinRoom(socket, roomId);
+                if(usersInGroup === (maxUsersInGroup-1)){
+                    roomdata.set(socket, "gameStatus", "ready");
+                    //wystartuj gre!
+                    socket.emit("initGame"); 
+                    socket.emit("startGame");
+                }
+                return 0;
+            }
+         }
         
         //dodaj nowy pokoj
         roomdata.joinRoom(socket, socket.nickname);      
-        roomsList.push(socket.nickname);
         roomdata.set(socket, "gameStatus", "waiting");
         
         //zmien widok gry
