@@ -5,11 +5,12 @@
 var start = $('#start');
 var nickname = $('#nickname');
 var naglowek = $('#naglowek');
+var statusNickname = $('#statusNickname');
 var body = $('body');
 var socket;
 var nick;
 var time = 0;
-var statusNickname = $('#statusNickname');
+var nrPyt = 0;  //numer pytania
 
 // Inicjalizacja
 $(document).ready(function(){   
@@ -55,6 +56,7 @@ $(document).ready(function(){
         $('#zasady').remove();
         $('#zaloguj').remove();  
         
+        socket.emit("probaDB");
         //inicjuj czat
         //wyswietl ekran oczekiwania na graczy
     });
@@ -66,7 +68,7 @@ $(document).ready(function(){
         if(wiadomosc){
             var w = {};
             w.user = nick;
-            w.date = Date().Now;
+            w.date = Date.now();
             w.text = wiadomosc;
     
            socket.emit("czatWiadomosc", w);
@@ -76,13 +78,13 @@ $(document).ready(function(){
     socket.on("czatDopiszWiadomosc", function(w){
         var rozmowa = $('#rozmowa');
         rozmowa.append(w.text);
-    });
+    }); 
     
 });
 
 //popraw - gdy odswiezam stronę, pole nickname jest disabled, button widoczny
 
-//---------------------------progres bar----------------------------------
+//---------------------------progres bar----------------------------
 //na tescie na prawo jazdy na odpowiedz na 32 pytania mamy 25 min(1500s) co daje 46s na jedno pytanie 
 var showBar;
 function progressBar(){

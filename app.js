@@ -14,6 +14,20 @@ app.use('/js/jquery.min.js', static(__dirname + '/bower_components/jquery/dist/j
 app.use('/js/jquery.min.map', static(__dirname + '/bower_components/jquery/dist/jquery.min.map'));
 app.use(static(__dirname + '/public'));
 
+//--------------------------------
+var quiz = require('./models/quiz');
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/test');
+
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function (callback) {
+  // yay!
+     console.log('Połączono z MongoDB!');
+});
+
+//--------------------------------
+
 io.sockets.on("connection", function (socket) {
     
     socket.on("czyNicknameDostepny", function (n) { 
@@ -70,7 +84,29 @@ io.sockets.on("connection", function (socket) {
         roomdata.set(socket, "chat", roomdata.get(socket, "chat").concat(w));       
         //polaczone sily socket.io i roomdata        
         io.to(roomdata.get(socket, "room")).emit('czatDopiszWiadomosc', w);     
-    });   
+    }); 
+    
+    socket.on("probaDB", function(){
+        var cat = new quiz({ name: 'Puszek' });
+        console.log(cat.name);
+        
+         console.log("save");
+        
+        cat.save(function (err) {
+            if (err) return console.error(err);
+        });
+        
+         console.log("unsave");
+        
+        quiz.find(function (err, guiz) {
+            if (err) return console.error(err);
+            console.log(guiz);
+        });
+        
+    });
+    
+    
+    
 });
 
 httpServer.listen(port, function () {
