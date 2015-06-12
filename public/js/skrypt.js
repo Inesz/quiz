@@ -11,7 +11,8 @@ var nick;
 var time = 0;
 var statusNickname = $('#statusNickname');
 //----------------------------------------------
-var progressBarHtml = '<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:40%">'+ time + '</div>';
+var progressBarHtml = '<div id="progrBar"><div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="46" style="width:0%"></div></div>';
+
 var czatHtml ='<div id="czat">'+
                 '<div id="rozmowa"></div>'+
                 '<input id="wiadomosc" type="text"></input>'+
@@ -22,9 +23,9 @@ var graHtml = '<div id="gra">'+
         '<div id="czas">'+progressBarHtml+'</div>'+
         '<div id="pyt"></div>'+
         '<div id="odp">'+
-            '<div id="a"></div>'+
-            '<div id="b"></div>'+
-            '<div id="c"></div>'+
+            '<input id="a" value="" type="button"/>'+
+            '<input id="b" value="" type="button"/>'+
+            '<input id="c" value="" type="button"/>'+
         '</div>'+        
     '</div>';
 
@@ -74,9 +75,36 @@ $(document).ready(function(){
         $('#zaloguj').remove(); 
         
         body.append(graHtml);
-        body.append(czatHtml);    
+        body.append(czatHtml); 
+               
     });
-    
+     
 });
 
 //popraw - gdy odswiezam stronę, pole nickname jest disabled, button widoczny
+
+//---------------------------progres bar----------------------------------
+//na tescie na prawo jazdy na odpowiedz na 32 pytania mamy 25 min(1500s) co daje 46s na jedno pytanie 
+var showBar;
+function progressBar(){
+    var progressBar = $('.progress-bar');
+    showBar = function(){
+        if((time*(100/46)) < 101){
+        progressBar.attr('aria-valuenow', time);
+        progressBar.attr('style', 'width:'+time*(100/46)+'%');
+        progressBar.text(time+'s');
+        time=time+1;
+        } 
+    };
+    
+    setInterval(function(){ showBar(time); }, 1000); 
+    
+    /*
+    var p = progressBar();
+        p();
+        
+        $('#odp').children().click(function(){
+           clearInterval(showBar); 
+        });
+        */
+}
