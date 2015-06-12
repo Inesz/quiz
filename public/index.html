@@ -5,10 +5,29 @@
   <title>Test wiedzy o ruchu drogowym</title>
   <meta charset="UTF-8">
   <link rel="stylesheet" href="/css/main.css">
+  
+  <!-- dodaj bootstrap do projektu-->
+   <!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<!-- Latest compiled JavaScript -->
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 </head>
 
 <body>
+    <h1 id="naglowek">Witaj ! ;)</h1>
 
+    <div id="zasady">
+    <p>Planujesz egzamin na prawo jazdy? Chcesz powtórzyć zasady ruchu drogowego? A może chcesz popisać się swoją wiedzą? Trafiłeś we właściwe miejsce ;) Zapraszamy na test wiedzy z zasad ruchu drogowego. Odpowiedz na pytania egzaminacyjne, wymień spostrzeżenia ze współtowarzyszami, ciesz się zdobytą wiedzą ^.^</p>    
+    </div>
+
+<div id="zaloguj">
+    <p>Login</p>
+    <input id="nickname">
+    <p id="statusNickname"></p>
+    <input id="start" type="button" value="No to jedziemy!" disabled> 
+</div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="/js/jquery.min.js"></script>

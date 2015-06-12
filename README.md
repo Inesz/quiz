@@ -14,3 +14,4 @@ npm install -g bower
 bower init
 bower install jquery
 npm install -g less
+npm install roomdata
