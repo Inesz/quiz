@@ -28,6 +28,44 @@
     <p id="statusNickname"></p>
     <input id="start" type="button" value="No to jedziemy!" disabled> 
 </div>
+  
+  <div id="gra">
+        <div id="nrPyt"></div>
+        <div id="czas">
+            <div id="progrBar">
+                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="46" style="width:0%">       
+                </div>
+            </div>     
+        </div>
+        <div id="pyt"></div>
+        <div id="odp">
+            <input id="a" value="" type="button"/>
+            <input id="b" value="" type="button"/>
+            <input id="c" value="" type="button"/>
+        </div>        
+    </div>  
+    
+    <div id="wynik">
+        <div id="opisOdp"></div>
+        <input id="nastPyt" type="button" value="Dalej"/>
+        
+        <div id="pktOdp">       
+            <tabelka></tabelka>
+        </div>
+    </div> 
+
+    <div id="">
+        <div id="czat">
+            <div id="rozmowa"></div>
+            <input id="wiadomosc" type="text"></input>
+            <input id="wyslij" type="button" value="wyślij"/>
+        </div>
+        
+        <div id="podsumowanie">
+            <tabelka></tabelka>
+        </div>
+    </div>
+ 
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="/js/jquery.min.js"></script>

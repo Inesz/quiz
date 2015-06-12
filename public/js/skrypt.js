@@ -10,25 +10,6 @@ var socket;
 var nick;
 var time = 0;
 var statusNickname = $('#statusNickname');
-//----------------------------------------------
-var progressBarHtml = '<div id="progrBar"><div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="46" style="width:0%"></div></div>';
-
-var czatHtml ='<div id="czat">'+
-                '<div id="rozmowa"></div>'+
-                '<input id="wiadomosc" type="text"></input>'+
-                '<input id="wyslij" type="button" value="wyślij"/>'+
-              '</div>';
-var graHtml = '<div id="gra">'+
-        '<div id="nrPyt"></div>'+
-        '<div id="czas">'+progressBarHtml+'</div>'+
-        '<div id="pyt"></div>'+
-        '<div id="odp">'+
-            '<input id="a" value="" type="button"/>'+
-            '<input id="b" value="" type="button"/>'+
-            '<input id="c" value="" type="button"/>'+
-        '</div>'+        
-    '</div>';
-
 
 // Inicjalizacja
 $(document).ready(function(){   
@@ -62,23 +43,41 @@ $(document).ready(function(){
          $("input").removeAttr('disabled');
          */
      }); 
-    
+
     start.on('click',function(){        
         console.log("start");
         socket.emit('szukajPokoju');      
     }); 
-    
+
     socket.on('initGame', function(){
         //usun niepotrzebne elementy
         //start.css('visibility', 'hidden');
         $('#zasady').remove();
-        $('#zaloguj').remove(); 
+        $('#zaloguj').remove();  
         
-        body.append(graHtml);
-        body.append(czatHtml); 
-               
+        //inicjuj czat
+        //wyswietl ekran oczekiwania na graczy
     });
-     
+
+    //----------------obsluga czartu------------------------- 
+    $('#wyslij').on('click',function(){
+        var wiadomosc = $('#wiadomosc').val();
+        console.log(wiadomosc);
+        if(wiadomosc){
+            var w = {};
+            w.user = nick;
+            w.date = Date().Now;
+            w.text = wiadomosc;
+    
+           socket.emit("czatWiadomosc", w);
+        }      
+    });
+    
+    socket.on("czatDopiszWiadomosc", function(w){
+        var rozmowa = $('#rozmowa');
+        rozmowa.append(w.text);
+    });
+    
 });
 
 //popraw - gdy odswiezam stronę, pole nickname jest disabled, button widoczny

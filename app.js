@@ -43,10 +43,11 @@ io.sockets.on("connection", function (socket) {
             var usersInGroup = roomdata.rooms[roomId]['users'].length;
             if(usersInGroup < maxUsersInGroup){
                 roomdata.joinRoom(socket, roomId);
+                //grupa pelna
+                socket.emit("initGame", roomdata.get(socket, "chat")); 
                 if(usersInGroup === (maxUsersInGroup-1)){
                     roomdata.set(socket, "gameStatus", "ready");
                     //wystartuj gre!
-                    socket.emit("initGame"); 
                     socket.emit("startGame");
                 }
                 return 0;
@@ -56,9 +57,19 @@ io.sockets.on("connection", function (socket) {
         //dodaj nowy pokoj
         roomdata.joinRoom(socket, socket.nickname);      
         roomdata.set(socket, "gameStatus", "waiting");
+        roomdata.set(socket, "chat", []);
         
         //zmien widok gry
-        socket.emit("initGame"); 
+        socket.emit("initGame", roomdata.get(socket, "chat")); 
+    }); 
+    
+    //-------------zarzadzanie czatem------------------------- 
+    //odbiera wiadomosc i rozsyla ja do uzytkownikow danego pokoju
+    socket.on("czatWiadomosc", function (w) {
+        //console.log(Array.isArray(roomdata.get(socket, "chat")));        
+        roomdata.set(socket, "chat", roomdata.get(socket, "chat").concat(w));       
+        //polaczone sily socket.io i roomdata        
+        io.to(roomdata.get(socket, "room")).emit('czatDopiszWiadomosc', w);     
     });   
 });
 
