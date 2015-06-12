@@ -1,0 +1,24 @@
+{
+  "name": "QuizJs",
+  "version": "0.1.0",
+  "authors": [
+    "Agnieszka Garsta"
+  ],
+  "license": "free",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.4"
+  },
+  "description": "Test wiedzy o przepisach ruchu drogowego",
+  "main": "app.js",
+  "moduleType": [
+    "globals",
+    "node"
+  ]
+}
