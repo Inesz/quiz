@@ -16,6 +16,7 @@ app.use(static(__dirname + '/public'));
 
 //--------------------------------
 var quiz = require('./models/quiz');
+
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/test');
 
@@ -24,11 +25,10 @@ db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function (callback) {
   // yay!
      console.log('Połączono z MongoDB!');
-});
-
+}); 
 //--------------------------------
 
-io.sockets.on("connection", function (socket) {
+io.sockets.on("connection", function (socket) {   
     
     socket.on("czyNicknameDostepny", function (n) { 
         console.log("czyNicknameDostepny" + n);
@@ -72,6 +72,12 @@ io.sockets.on("connection", function (socket) {
         roomdata.joinRoom(socket, socket.nickname);      
         roomdata.set(socket, "gameStatus", "waiting");
         roomdata.set(socket, "chat", []);
+        roomdata.set(socket, "questions", []);
+        roomdata.set(socket, "score", []);
+        roomdata.set(socket, "count", "");
+        roomdata.set(socket, "poprawnaOdp", "");
+        roomdata.set(socket, "opis", "");
+        ustawIloscPytan();
         
         //zmien widok gry
         socket.emit("initGame", roomdata.get(socket, "chat")); 
@@ -84,63 +90,130 @@ io.sockets.on("connection", function (socket) {
         roomdata.set(socket, "chat", roomdata.get(socket, "chat").concat(w));       
         //polaczone sily socket.io i roomdata        
         io.to(roomdata.get(socket, "room")).emit('czatDopiszWiadomosc', w);     
-    }); 
-    
+    });
+
     socket.on("initChat", function () {
         //console.log("initChat " +roomdata.get(socket, "chat"));
         var historiaChatu = roomdata.get(socket, "chat");
-        socket.emit("historiaChatu", historiaChatu);
+        socket.emit("historiaChatu", historiaChatu);  
     });
     
     //------------------zarządzanie pytaniami----------------
-    //store - tablica wyboru, exec - tablica wykluczania
-    function random(store, exc){
-        //sprawdzenie czy istnieje wolny element
-        if(store.length === exc.length){
+    var ustawIloscPytan = function(){ 
+        quiz.count(function (err, count) {
+            roomdata.set(socket, "count", count); 
+        });   
+    }; 
+    
+     //max - wielkosc tablicy wyboru, exec - tablica wykluczania
+    var random = function(max, exc){
+        //sprawdzenie czy istnieje wolny element      
+        if(exc && max === exc.length){
             return -1;
         }
 
         //wylosuj liczbe z przedzialu <min, store.length> 
         var min = 0;   
-        var index = Math.ceil(Math.random() * (store.length-min)) + min;
+        var index = Math.ceil(Math.random() * (max-min)) + min;
         //var tab = store.slice(min,index).concat(store.slice(index+1,store.length+1));
 
         if(exc){
             //sprawdz czy dany indeks zostal juz wylosowany
               while(exc.indexOf(index)!==-1){
                   //jesli ostatni element - wroc do poczatku
-                  if(index === store.length-1){
+                  if(index === max-1){
                       index=-1;
                   }
                   index++;
               }
         }    
         return index;
-    }
-    /*//proba bazy 
-    socket.on("probaDB", function(){
-        var cat = new quiz({ name: 'Puszek' });
-        console.log(cat.name);
-        
-         console.log("save");
-        
-        cat.save(function (err) {
-            if (err) return console.error(err);
+    };
+
+    var mix = function(tab) {
+    for (var i = 0; i < tab.length; i++) {
+        var j = Math.floor(Math.random() * tab.length);
+        var temp = tab[i];
+        tab[i] = tab[j];
+        tab[j] = temp;
+        }
+    return tab;
+    };
+    
+    socket.on("pobierzPytanie", function(){
+        //pobierz dane
+        var questions = roomdata.get(socket, "questions");
+        var count = roomdata.get(socket, "count");
+        //wylosuj nr nowego pytania
+        var nrPyt = random(count, (questions.length!==0)?questions:undefined);
+        //dodaj nrPyt roomdata.questions //[] czy bez ???
+        roomdata.set(socket, "questions", roomdata.get(socket, "questions").concat(nrPyt)); 
+        //pobierz pytanie o numerze nrPyt;
+        var pytanie = quiz.find({'nrPytania' : nrPyt}).stream(); 
+        pytanie.on('data', function(doc){
+            //do poprawnej odpowiedzi dodajemy dwie losowe niepoprawne
+            var odpowiedzi = [doc.poprawnaOdp];
+            
+            var ileOdpowiedzi = doc.odpowiedzi.length;
+            var nrOdp = random(ileOdpowiedzi);
+            odpowiedzi.push(ileOdpowiedzi[nrOdp]);
+            odpowiedzi.push(ileOdpowiedzi[random([nrOdp])]);
+            //mieszamy odpowiedzi
+            odpowiedzi = mix(odpowiedzi);
+            
+            //tworzymy strukture pytania
+            var pytanie = {
+                pkt : doc.punkty,
+                kat : doc.kategoria,
+                pyt : doc.pytanie,
+                odp : odpowiedzi
+            }; 
+            
+            //zapisujemy odpowiedz
+            roomdata.set(socket, "poprawnaOdp", odpowiedzi.indexOf(doc.poprawnaOdp));
+            roomdata.set(socket, "opis", doc.opis);
+
+            //wysylamy pytanie do wszystkich w pokoju
+            io.to(roomdata.get(socket, "room")).emit("wyswietlPytanie", pytanie);                
         });
-        
-         console.log("unsave");
-        
-        quiz.find(function (err, guiz) {
-            if (err) return console.error(err);
-            console.log(guiz);
-        });
-        
     });
-    */
-    
-    
 });
 
 httpServer.listen(port, function () {
     console.log('Serwer HTTP działa na porcie ' + port);
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

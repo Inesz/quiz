@@ -59,10 +59,16 @@ $(document).ready(function(){
         
         //inicjuj czat
         socket.emit("initChat");
+        //socket.emit("probaDB");
+       // socket.emit("pytanie");
+        socket.emit("pobierzPytanie");
+        //pobierzPytanie
         //wyswietl ekran oczekiwania na graczy
     });
 
     //----------------obsluga czartu------------------------- 
+    //popraw date 
+    //sformatuj wyswietlenie
      var nowaWiadomosc = function (w){
         rozmowa.append('<p>'+w.user + " " + w.text+" " + w.date+'</p>');
     };
@@ -89,6 +95,16 @@ $(document).ready(function(){
     socket.on("czatDopiszWiadomosc", function(w){
         nowaWiadomosc(w);
     }); 
+    
+    
+    //------------------obsługa pytanin-------------------------
+    var pobierzPytanie = function(){
+       socket.emit("pobierzPytanie"); 
+    };
+    
+    socket.on("wyswietlPytanie", function(pytanie){
+        console.log(pytanie);
+    });
     
 });
 
