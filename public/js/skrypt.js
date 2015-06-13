@@ -6,6 +6,7 @@ var start = $('#start');
 var nickname = $('#nickname');
 var naglowek = $('#naglowek');
 var statusNickname = $('#statusNickname');
+var rozmowa = $('#rozmowa');
 var body = $('body');
 var socket;
 var nick;
@@ -56,12 +57,22 @@ $(document).ready(function(){
         $('#zasady').remove();
         $('#zaloguj').remove();  
         
-        socket.emit("probaDB");
         //inicjuj czat
+        socket.emit("initChat");
         //wyswietl ekran oczekiwania na graczy
     });
 
     //----------------obsluga czartu------------------------- 
+     var nowaWiadomosc = function (w){
+        rozmowa.append('<p>'+w.user + " " + w.text+" " + w.date+'</p>');
+    };
+     
+     socket.on("historiaChatu", function(w){        
+         $(w).each(function(index, value){
+             nowaWiadomosc(value);
+         });
+     });
+    
     $('#wyslij').on('click',function(){
         var wiadomosc = $('#wiadomosc').val();
         console.log(wiadomosc);
@@ -76,8 +87,7 @@ $(document).ready(function(){
     });
     
     socket.on("czatDopiszWiadomosc", function(w){
-        var rozmowa = $('#rozmowa');
-        rozmowa.append(w.text);
+        nowaWiadomosc(w);
     }); 
     
 });

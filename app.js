@@ -86,6 +86,13 @@ io.sockets.on("connection", function (socket) {
         io.to(roomdata.get(socket, "room")).emit('czatDopiszWiadomosc', w);     
     }); 
     
+    socket.on("initChat", function () {
+        //console.log("initChat " +roomdata.get(socket, "chat"));
+        var historiaChatu = roomdata.get(socket, "chat");
+        socket.emit("historiaChatu", historiaChatu);
+    });
+    
+    /*//proba bazy 
     socket.on("probaDB", function(){
         var cat = new quiz({ name: 'Puszek' });
         console.log(cat.name);
@@ -104,7 +111,7 @@ io.sockets.on("connection", function (socket) {
         });
         
     });
-    
+    */
     
     
 });
