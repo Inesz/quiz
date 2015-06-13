@@ -92,6 +92,31 @@ io.sockets.on("connection", function (socket) {
         socket.emit("historiaChatu", historiaChatu);
     });
     
+    //------------------zarządzanie pytaniami----------------
+    //store - tablica wyboru, exec - tablica wykluczania
+    function random(store, exc){
+        //sprawdzenie czy istnieje wolny element
+        if(store.length === exc.length){
+            return -1;
+        }
+
+        //wylosuj liczbe z przedzialu <min, store.length> 
+        var min = 0;   
+        var index = Math.ceil(Math.random() * (store.length-min)) + min;
+        //var tab = store.slice(min,index).concat(store.slice(index+1,store.length+1));
+
+        if(exc){
+            //sprawdz czy dany indeks zostal juz wylosowany
+              while(exc.indexOf(index)!==-1){
+                  //jesli ostatni element - wroc do poczatku
+                  if(index === store.length-1){
+                      index=-1;
+                  }
+                  index++;
+              }
+        }    
+        return index;
+    }
     /*//proba bazy 
     socket.on("probaDB", function(){
         var cat = new quiz({ name: 'Puszek' });
