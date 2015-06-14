@@ -59,13 +59,19 @@
             <input id="wyslij" type="button" value="wyślij"/>
         </div>
         
-        <div id="pktOdp">       
-            <table>
-                <th><td name="nickname">login</td><td name="score">wynik</td><td name="points"></td></th>
+        <div id="pktOdp">
+        <table class="table">
+        <thead>
+      <tr>
+        <th name="nickname">login</th><th name="score">Lastname</th><th name="points"></th>
+      </tr>
+    </thead>
+    <tbody>
                 <tr><td name="nickname"></td><td name="score"></td><td name="points"></td></tr>
                 <tr><td name="nickname"></td><td name="score"></td><td name="points"></td></tr>
                 <tr><td name="nickname"></td><td name="score"></td><td name="points"></td></tr>
-            </table>
+    </tbody>
+  </table>
         </div>
         <!--
         <div id="podsumowanie">
@@ -81,12 +87,3 @@
 </body>
 
 </html>
-
-<table>
-      <tr>
-        <td> <img id="status" src="/img/bullet_red.png" width="35"> </td>
-        <td> <input id="login" type="text" value="" placeholder="login"> </td>
-        <td> <input id="open" type="button" value="Połącz"> </td>
-        <td> <input id="close" type="button" value="Rozłącz"> </td>
-      </tr>
-    </table>

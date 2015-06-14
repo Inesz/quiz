@@ -62,12 +62,6 @@ $(document).ready(function(){
      var nowaWiadomosc = function (w){
         rozmowa.append('<p>'+w.user + " " + w.text+" " + w.date+'</p>');
     };
-     
-     socket.on("historiaChatu", function(w){        
-         $(w).each(function(index, value){
-             nowaWiadomosc(value);
-         });
-     });
     
     $('#wyslij').on('click',function(){
         var wiadomosc = $('#wiadomosc').val();
@@ -88,22 +82,40 @@ $(document).ready(function(){
     
     
     //------------------obsługa gry-------------------------  
-     socket.on('initGame', function(){
+     socket.on('initGame', function(chat, users){
         //usun niepotrzebne elementy
         //start.css('visibility', 'hidden');
         $('#zasady').remove();
         $('#zaloguj').remove();  
         
-        
         //inicjuj czat
-        socket.emit("initChat");
+         if(chat){
+            $(chat).each(function(index, value){
+                nowaWiadomosc(value);
+            });
+         }
+         
+         //inicjuj tablice wynikow
+         if(users){
+             console.log(users);
+            $(users).each(function(index, value){
+                dopiszUsera(value);
+            });
+         }    
     });
+    
+    socket.on("dopiszUsera", function(value){
+        console.log("dopiszUsera");
+        dopiszUsera(value);
+    });  
+    var dopiszUsera = function(name){
+        $('#pktOdp td[name=nickname]:empty:first').text(name);
+    };
 
     socket.on("startGame", function(pytanie){   
         socket.emit("gotowyNaPytanie");     
         czekanie.remove();
         gra.css('visibility', 'visible'); 
-        
     });    
  /*   
     var pobierzPytanie = function(){
@@ -126,7 +138,7 @@ $(document).ready(function(){
     });
     
      socket.on("aktualizujWyniki", function(punktacja){
-        
+         
      });
     
     socket.on("wyswietlOdpowiedz", function(odpowiedz){
@@ -137,6 +149,9 @@ $(document).ready(function(){
         socket.emit("gotowyNaPytanie");
     });
     
+    socket.on("koniecGry", function(){
+         opisOdp.text("koniec gry!");
+     });
 });
 
 //popraw - gdy odswiezam stronę, pole nickname jest disabled, button widoczny

@@ -52,16 +52,19 @@ io.sockets.on("connection", function (socket) {
         //console.log(io.nsps['/'].adapter.rooms);
         //sprawdzenie z wykorzystaniem biblioteki roomdata
          for(var roomId in roomdata.rooms) {
-            var usersInGroup = roomdata.rooms[roomId]['users'].length;
+            var usersInGroup = roomdata.rooms[roomId].users.length;
             if(usersInGroup < maxUsersInGroup){
                 roomdata.joinRoom(socket, roomId);
+                socket.emit("initGame", roomdata.get(socket, "chat"),listaUserow());
+                //wyslij uzupelnienie listy uzytkownikow do wszystkich oprocz aktualnego
+                socket.broadcast.to(roomdata.get(socket, "room")).emit("dopiszUsera", socket.nickname);
                 //grupa pelna
-                socket.emit("initGame", roomdata.get(socket, "chat")); 
                 if(usersInGroup === (maxUsersInGroup-1)){
                     roomdata.set(socket, "gameStatus", "ready");
                     //wystartuj gre!
                     socket.emit("startGame");
                 }
+                listaUserow();
                 return 0;
             }
          }
@@ -75,13 +78,24 @@ io.sockets.on("connection", function (socket) {
         roomdata.set(socket, "poprawnaOdp", "");
         roomdata.set(socket, "opis", "");
         roomdata.set(socket, "najszybszyCzas", "");
-        roomdata.set(socket, "gotowyNaPytanie", 2); //jesli dodamy 1 otrzymamy pytanie
+        roomdata.set(socket, "gotowyNaPytanie", 2); //2 oznacza gotowosc na pytanie
         ustawIloscPytan();
         
         //zmien widok gry
-        socket.emit("initGame", roomdata.get(socket, "chat")); 
+        socket.emit("initGame", roomdata.get(socket, "chat"),listaUserow());
     }); 
     
+    //pobierz nickname uzytkownikow danego pokoju
+    var listaUserow = function(){
+        var users = [];          
+        io.sockets.sockets.map(function(e){
+            if(e.roomdata_room===roomdata.get(socket, "room"))
+                users.push(e.nickname);
+        });
+        return users;
+    };
+   
+        
     //-------------zarzadzanie czatem------------------------- 
     //odbiera wiadomosc i rozsyla ja do uzytkownikow danego pokoju
     socket.on("czatWiadomosc", function (w) {
@@ -90,13 +104,6 @@ io.sockets.on("connection", function (socket) {
         //polaczone sily socket.io i roomdata        
         io.to(roomdata.get(socket, "room")).emit('czatDopiszWiadomosc', w);     
     });
-
-    socket.on("initChat", function () {
-        //console.log("initChat " +roomdata.get(socket, "chat"));
-        var historiaChatu = roomdata.get(socket, "chat");
-        socket.emit("historiaChatu", historiaChatu);  
-    });
-    
     //------------------zarządzanie pytaniami----------------
     var ustawIloscPytan = function(){ 
         quiz.count(function (err, count) {
@@ -148,6 +155,12 @@ io.sockets.on("connection", function (socket) {
     });
     
     var pobierzPytanie = function(){
+        //po 10 pytaniu zakończ gre
+        if(roomdata.get(socket, "questions")===10){
+            io.to(roomdata.get(socket, "room")).emit('koniecGry'); 
+            return 0;
+        }
+        
         //zeruj 
         roomdata.set(socket, "gotowyNaPytanie", 0);
         roomdata.set(socket, "najszybszyCzas", undefined);
