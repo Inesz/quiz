@@ -23,11 +23,9 @@ mongoose.connect('mongodb://localhost/test');
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function (callback) {
-  // yay!
      console.log('Połączono z MongoDB!');
 }); 
 //--------------------------------
-
 io.sockets.on("connection", function (socket) {   
     
     socket.on("czyNicknameDostepny", function (n) { 
@@ -73,10 +71,11 @@ io.sockets.on("connection", function (socket) {
         roomdata.set(socket, "gameStatus", "waiting");
         roomdata.set(socket, "chat", []);
         roomdata.set(socket, "questions", []);
-        roomdata.set(socket, "score", []);
         roomdata.set(socket, "count", "");
         roomdata.set(socket, "poprawnaOdp", "");
         roomdata.set(socket, "opis", "");
+        roomdata.set(socket, "najszybszyCzas", "");
+        roomdata.set(socket, "gotowyNaPytanie", 2); //jesli dodamy 1 otrzymamy pytanie
         ustawIloscPytan();
         
         //zmien widok gry
@@ -111,7 +110,6 @@ io.sockets.on("connection", function (socket) {
         if(exc && max === exc.length){
             return -1;
         }
-
         //wylosuj liczbe z przedzialu <min, store.length> 
         var min = 0;   
         var index = Math.ceil(Math.random() * (max-min)) + min;
@@ -126,7 +124,8 @@ io.sockets.on("connection", function (socket) {
                   }
                   index++;
               }
-        }    
+        }
+        console.log(index);
         return index;
     };
 
@@ -140,12 +139,25 @@ io.sockets.on("connection", function (socket) {
     return tab;
     };
     
-    socket.on("pobierzPytanie", function(){
+    socket.on("gotowyNaPytanie", function(){
+        if(roomdata.get(socket, "gotowyNaPytanie") === 2){
+            pobierzPytanie();
+        }else{
+           roomdata.set(socket, "gotowyNaPytanie",roomdata.get(socket, "gotowyNaPytanie")+1);
+        }
+    });
+    
+    var pobierzPytanie = function(){
+        //zeruj 
+        roomdata.set(socket, "gotowyNaPytanie", 0);
+        roomdata.set(socket, "najszybszyCzas", undefined);
+        
         //pobierz dane
         var questions = roomdata.get(socket, "questions");
         var count = roomdata.get(socket, "count");
         //wylosuj nr nowego pytania
         var nrPyt = random(count, (questions.length!==0)?questions:undefined);
+        
         //dodaj nrPyt roomdata.questions //[] czy bez ???
         roomdata.set(socket, "questions", roomdata.get(socket, "questions").concat(nrPyt)); 
         //pobierz pytanie o numerze nrPyt;
@@ -156,11 +168,12 @@ io.sockets.on("connection", function (socket) {
             
             var ileOdpowiedzi = doc.odpowiedzi.length;
             var nrOdp = random(ileOdpowiedzi);
-            odpowiedzi.push(ileOdpowiedzi[nrOdp]);
-            odpowiedzi.push(ileOdpowiedzi[random([nrOdp])]);
+            odpowiedzi.push(doc.odpowiedzi[nrOdp]);
+            nrOdp = random(ileOdpowiedzi, [nrOdp]);
+            odpowiedzi.push(doc.odpowiedzi[nrOdp]);
             //mieszamy odpowiedzi
             odpowiedzi = mix(odpowiedzi);
-            
+
             //tworzymy strukture pytania
             var pytanie = {
                 pkt : doc.punkty,
@@ -175,45 +188,44 @@ io.sockets.on("connection", function (socket) {
 
             //wysylamy pytanie do wszystkich w pokoju
             io.to(roomdata.get(socket, "room")).emit("wyswietlPytanie", pytanie);                
-        });
-    });
+        });    
+    };
+    
+     socket.on("sprawdzOdpowiedz", function(wynik){
+         //przyznaj punktu za prawidlowa odpowiedz i czas
+         var zdobytePunkty = 0;
+         if(wynik.odp === roomdata.get(socket, "poprawnaOdp")){
+            zdobytePunkty++;  
+            if(roomdata.get(socket, "najszybszyCzas")>wynik.czas){
+                roomdata.set(socket, "najszybszyCzas", wynik.czas);
+                zdobytePunkty++;    
+            }
+             
+             //aktualizacja wynikow
+             if(socket.score){
+                 socket.score=socket.score+zdobytePunkty;
+             }else{
+                 socket.score=zdobytePunkty;
+             }
+         }
+                 
+             var punktacja = {
+                 user:socket.nickname,
+                 razemPkt:socket.score,
+                 zdobytePkt:zdobytePunkty
+             };
+    
+             io.to(roomdata.get(socket, "room")).emit('aktualizujWyniki', punktacja); 
+             
+             var odpowiedz = {
+                 poprawnaOdp:roomdata.get(socket, "poprawnaOdp"),
+                 opis:roomdata.get(socket, "opis")
+             };
+            
+         socket.emit("wyswietlOdpowiedz", odpowiedz);             
+    });   
 });
 
 httpServer.listen(port, function () {
     console.log('Serwer HTTP działa na porcie ' + port);
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -12,7 +12,12 @@ var socket;
 var nick;
 var time = 0;
 var nrPyt = 0;  //numer pytania
-
+//var odp = $('#odp'); 
+var czekanie = $('#czekanie');
+var gra = $('#gra');
+var opisOdp = $('#opisOdp');
+var nastPyt = $('#nastPyt');
+            
 // Inicjalizacja
 $(document).ready(function(){   
      
@@ -51,21 +56,6 @@ $(document).ready(function(){
         socket.emit('szukajPokoju');      
     }); 
 
-    socket.on('initGame', function(){
-        //usun niepotrzebne elementy
-        //start.css('visibility', 'hidden');
-        $('#zasady').remove();
-        $('#zaloguj').remove();  
-        
-        //inicjuj czat
-        socket.emit("initChat");
-        //socket.emit("probaDB");
-       // socket.emit("pytanie");
-        socket.emit("pobierzPytanie");
-        //pobierzPytanie
-        //wyswietl ekran oczekiwania na graczy
-    });
-
     //----------------obsluga czartu------------------------- 
     //popraw date 
     //sformatuj wyswietlenie
@@ -97,13 +87,54 @@ $(document).ready(function(){
     }); 
     
     
-    //------------------obsługa pytanin-------------------------
+    //------------------obsługa gry-------------------------  
+     socket.on('initGame', function(){
+        //usun niepotrzebne elementy
+        //start.css('visibility', 'hidden');
+        $('#zasady').remove();
+        $('#zaloguj').remove();  
+        
+        
+        //inicjuj czat
+        socket.emit("initChat");
+    });
+
+    socket.on("startGame", function(pytanie){   
+        socket.emit("gotowyNaPytanie");     
+        czekanie.remove();
+        gra.css('visibility', 'visible'); 
+        
+    });    
+ /*   
     var pobierzPytanie = function(){
-       socket.emit("pobierzPytanie"); 
+        socket.emit("pobierzPytanie");
     };
-    
+*/
     socket.on("wyswietlPytanie", function(pytanie){
         console.log(pytanie);
+        time=0;
+        
+        $('#a0').val(pytanie.odp[0]);
+        $('#b1').val(pytanie.odp[1]);
+        $('#c2').val(pytanie.odp[2]);
+        
+        $('#pyt').text(pytanie.pyt);     
+    });
+    
+    $('#odp').children().click(function(){  
+        socket.emit("sprawdzOdpowiedz", {odp:$(this).attr('id').charAt(1), czas:time});
+    });
+    
+     socket.on("aktualizujWyniki", function(punktacja){
+        
+     });
+    
+    socket.on("wyswietlOdpowiedz", function(odpowiedz){
+         opisOdp.text(odpowiedz.opis);
+     });
+    
+    nastPyt.click(function(){
+        socket.emit("gotowyNaPytanie");
     });
     
 });
@@ -135,3 +166,18 @@ function progressBar(){
         });
         */
 }
+//--------------------pytania na nude------------
+var initCiekawostki = function(){
+var pytania = [];
+pytania.push("Wystarczy zamknąć w pomieszczeniu 57 osób, by mieć 99 proc. pewności, że dwie z nich mają urodziny tego samego dnia.");
+
+pytania.push("Przeciętnie w ciągu dnia na całym świecie 12 noworodków jest wydawanych ze szpitala nie tym rodzicom, co trzeba.");
+
+pytania.push("Wystarczy zamknąć w pomieszczeniu 57 osób, by mieć 99 proc. pewności, że dwie z nich mają urodziny tego samego dnia.");
+
+pytania.push("Sernik został wymyślony w starożytnej Grecji. Podawano go sportowcom podczas Igrzysk Olimpijskich.");
+
+pytania.push("Mieszkańcy Wielkiej Brytanii jedzą więcej fasoli z puszki niż reszta świata razem wzięta.");
+
+    return pytania;
+};
