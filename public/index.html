@@ -50,10 +50,6 @@
     <div id="wynik">
         <div id="opisOdp"></div>
         <input id="nastPyt" type="button" value="Dalej"/>
-        
-        <div id="pktOdp">       
-            <tabelka></tabelka>
-        </div>
     </div> 
 
     <div id="">
@@ -63,9 +59,19 @@
             <input id="wyslij" type="button" value="wyślij"/>
         </div>
         
+        <div id="pktOdp">       
+            <table>
+                <th><td name="nickname">login</td><td name="score">wynik</td><td name="points"></td></th>
+                <tr><td name="nickname"></td><td name="score"></td><td name="points"></td></tr>
+                <tr><td name="nickname"></td><td name="score"></td><td name="points"></td></tr>
+                <tr><td name="nickname"></td><td name="score"></td><td name="points"></td></tr>
+            </table>
+        </div>
+        <!--
         <div id="podsumowanie">
             <tabelka></tabelka>
         </div>
+        -->
     </div>
  
 
@@ -75,3 +81,12 @@
 </body>
 
 </html>
+
+<table>
+      <tr>
+        <td> <img id="status" src="/img/bullet_red.png" width="35"> </td>
+        <td> <input id="login" type="text" value="" placeholder="login"> </td>
+        <td> <input id="open" type="button" value="Połącz"> </td>
+        <td> <input id="close" type="button" value="Rozłącz"> </td>
+      </tr>
+    </table>
