@@ -62,7 +62,7 @@ io.sockets.on("connection", function (socket) {
                 if(usersInGroup === (maxUsersInGroup-1)){
                     roomdata.set(socket, "gameStatus", "ready");
                     //wystartuj gre!
-                    socket.emit("startGame");
+                    io.to(roomdata.get(socket, "room")).emit("startGame");
                 }
                 listaUserow();
                 return 0;
@@ -78,7 +78,7 @@ io.sockets.on("connection", function (socket) {
         roomdata.set(socket, "poprawnaOdp", "");
         roomdata.set(socket, "opis", "");
         roomdata.set(socket, "najszybszyCzas", "");
-        roomdata.set(socket, "gotowyNaPytanie", 2); //2 oznacza gotowosc na pytanie
+        roomdata.set(socket, "gotowyNaPytanie", 0); //2 oznacza gotowosc na pytanie
         ustawIloscPytan();
         
         //zmien widok gry
@@ -94,8 +94,7 @@ io.sockets.on("connection", function (socket) {
         });
         return users;
     };
-   
-        
+     
     //-------------zarzadzanie czatem------------------------- 
     //odbiera wiadomosc i rozsyla ja do uzytkownikow danego pokoju
     socket.on("czatWiadomosc", function (w) {

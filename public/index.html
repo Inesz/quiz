@@ -4,7 +4,7 @@
 <head>
   <title>Test wiedzy o ruchu drogowym</title>
   <meta charset="UTF-8">
-  <link rel="stylesheet" href="/css/main.css">
+ 
   
   <!-- dodaj bootstrap do projektu-->
    <!-- Latest compiled and minified CSS -->
@@ -13,20 +13,29 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <!-- Latest compiled JavaScript -->
 <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+ <link rel="stylesheet" href="/css/main.css">
 </head>
 
 <body>
-    <h1 id="naglowek">Witaj ! ;)</h1>
+    <div id="naglowek">Witaj ! ;)</div>
+  
+   <div id="content"> 
 
     <div id="zasady">
     <p>Planujesz egzamin na prawo jazdy? Chcesz powtórzyć zasady ruchu drogowego? A może chcesz popisać się swoją wiedzą? Trafiłeś we właściwe miejsce ;) Zapraszamy na test wiedzy z zasad ruchu drogowego. Odpowiedz na pytania egzaminacyjne, wymień spostrzeżenia ze współtowarzyszami, ciesz się zdobytą wiedzą ^.^</p>    
     </div>
 
 <div id="zaloguj">
-    <p>Login</p>
+   <div>
+    <label for="nickname">Login</label>
     <input id="nickname">
+    </div>
+    
     <p id="statusNickname"></p>
-    <input id="start" type="button" value="No to jedziemy!" disabled> 
+    
+    <div>
+    <input id="start" type="button" value="No to jedziemy!">
+    </div>
 </div>
   
   <div id="czekanie"><p></p></div>
@@ -52,7 +61,7 @@
         <input id="nastPyt" type="button" value="Dalej"/>
     </div> 
 
-    <div id="">
+   <div id="wynikCzat">
         <div id="czat">
             <div id="rozmowa"></div>
             <input id="wiadomosc" type="text"></input>
@@ -63,7 +72,7 @@
         <table class="table">
         <thead>
       <tr>
-        <th name="nickname">login</th><th name="score">Lastname</th><th name="points"></th>
+        <th name="nickname">login</th><th name="score">wynik</th><th name="points"></th>
       </tr>
     </thead>
     <tbody>
@@ -73,14 +82,20 @@
     </tbody>
   </table>
         </div>
+        
+        </div>
         <!--
         <div id="podsumowanie">
             <tabelka></tabelka>
         </div>
         -->
-    </div>
  
-
+</div>
+ 
+  <footer>
+  autor: Agnieszka 
+</footer> 
+ 
   <script src="/socket.io/socket.io.js"></script>
   <script src="/js/jquery.min.js"></script>
   <script src="/js/skrypt.js"></script>

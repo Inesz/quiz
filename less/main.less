@@ -1,7 +1,178 @@
 // out: ../public/css/main.css, compress: true
 
-@bgColor: #eee;
+@niebieski: #0099CC;
+@rielony:  #8AC007;
+@urlTlo: "../img/droga.jpg";
+@urlBtnStart: "../img/btn1.png";
+@bialy: white;
+@czarny: #383838;
+@wysokoscNaglowka: 3em;
+@bg: rgba(255,255,255, 0.8);  
 
 body {
-	background-color: @bgColor;
+    background: @niebieski url(@urlTlo) no-repeat fixed center; 
+    background-size:cover;
 }
+
+#content {
+    border-radius: 25px;
+    border: 5px solid;
+    padding: 20px; 
+    width: 80%;
+    //height: 150px; 
+      
+    //centrowanie
+    margin-left: auto;
+    margin-right: auto; 
+    //oddalenie od panelu z powitaniem
+    margin-top: @wysokoscNaglowka+1em;
+    margin-bottom:1em;
+    
+    background-color: @bg;///rgba(255,255,255, 0.8);
+    
+}
+//----------------------------------------
+#naglowek, footer {
+    color: @bialy;
+    width:100%;
+    height:@wysokoscNaglowka;
+    padding:1em;
+    background:@czarny;
+    position: fixed;
+}
+
+#naglowek{
+    top: 0px;   
+    text-align: center;
+}
+
+#footer{
+    bottom: 0px;   
+}
+//----------------------------------------
+#start{  
+    //dopasowanie grafiki do pola input
+    background: @niebieski url(@urlBtnStart) no-repeat; 
+    background-size:cover;
+    cursor:pointer;
+    width: 150px;
+    height: 50px;
+    border: none;
+}
+
+#zaloguj {
+    width:100%;
+    padding-top:5%;
+    *{ 
+        text-align: center;
+        horizontal-align: middle;
+        margin-top:1em;
+        margin-bottom:1em;
+    }
+}
+
+#zasady *{
+    margin:1em;
+}
+//----------------------------------------
+#czekanie, #gra, #wynikCzat, #pktOdp{
+   // visibility: hidden;  
+}
+
+#start{
+    disabled: true;
+}
+//--------------czat i tablica wynikow-------------------
+#wynikCzat {
+    #wynikCzat{
+        height:14em;
+        width:100%;
+        margin:1em;
+    }
+   
+  #czat, #pktOdp{  
+    border: 1px solid;
+    margin:1em;
+    background-color: @bg;
+    }
+    
+    #czat{  
+        width:60%; 
+        float:left;
+        #rozmowa{
+        height:8em;
+        overflow-y: scroll;
+        
+        }
+        
+        input{
+            height:2em;
+            //display:inline;
+        }
+        
+        #wiadomosc{
+                width:80%; 
+            }
+        #wyslij{
+                width:19%; 
+            }
+    }   
+    #pktOdp{
+         height:10em;
+        width:30%;
+        float:right;
+        *{
+         height:1em;
+        }
+    }   
+    
+}
+//------------------gra-----------------------
+#gra{
+    *{
+        /*
+        text-align: center;
+        horizontal-align: middle;
+        margin-top:1em;
+        margin-bottom:1em;
+        margin:auto;
+        */
+        width:100%;    
+    }
+    
+    #nrPyt{
+        text-align:center;
+    }
+    
+    #pyt{
+        border-radius: 5px;
+        border: 1px solid;
+        padding:1em;
+    }
+    
+    input{
+        width:100%;
+        text-align:center;
+    }   
+}
+
+#wynik{
+    width:100%;
+    
+    //poziome centrowanie elem. liniowych
+    text-align: center;
+    horizontal-align: middle;
+    margin-top:1em;
+    margin-bottom:1em;
+    
+    #opisOdp{
+        width:100%;
+        padding:1em;
+    }   
+}
+
+//jak przykleic stopke do dolnej krawedzi ekranu
+
+
+
+
