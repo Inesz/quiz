@@ -60,8 +60,6 @@ io.sockets.on("connection", function (socket) {
                 socket.broadcast.to(roomdata.get(socket, "room")).emit("dopiszUsera", socket.nickname);
                 //grupa pelna
                 if(usersInGroup === (maxUsersInGroup-1)){
-                    roomdata.set(socket, "gameStatus", "ready");
-                    //wystartuj gre!
                     io.to(roomdata.get(socket, "room")).emit("startGame");
                 }
                 listaUserow();
@@ -71,13 +69,12 @@ io.sockets.on("connection", function (socket) {
         
         //dodaj nowy pokoj
         roomdata.joinRoom(socket, socket.nickname);      
-        roomdata.set(socket, "gameStatus", "waiting");
         roomdata.set(socket, "chat", []);
         roomdata.set(socket, "questions", []);
         roomdata.set(socket, "count", "");
         roomdata.set(socket, "poprawnaOdp", "");
         roomdata.set(socket, "opis", "");
-        roomdata.set(socket, "najszybszyCzas", "");
+        roomdata.set(socket, "najszybszyCzas", "-1");
         roomdata.set(socket, "gotowyNaPytanie", 0); //2 oznacza gotowosc na pytanie
         ustawIloscPytan();
         
@@ -118,7 +115,7 @@ io.sockets.on("connection", function (socket) {
         }
         //wylosuj liczbe z przedzialu <min, store.length> 
         var min = 0;   
-        var index = Math.ceil(Math.random() * (max-min)) + min;
+        var index = Math.floor(Math.random() * (max-min)) + min;
         //var tab = store.slice(min,index).concat(store.slice(index+1,store.length+1));
 
         if(exc){
@@ -162,7 +159,7 @@ io.sockets.on("connection", function (socket) {
         
         //zeruj 
         roomdata.set(socket, "gotowyNaPytanie", 0);
-        roomdata.set(socket, "najszybszyCzas", undefined);
+        roomdata.set(socket, "najszybszyCzas", -1);
         
         //pobierz dane
         var questions = roomdata.get(socket, "questions");
@@ -206,21 +203,21 @@ io.sockets.on("connection", function (socket) {
      socket.on("sprawdzOdpowiedz", function(wynik){
          //przyznaj punktu za prawidlowa odpowiedz i czas
          var zdobytePunkty = 0;
-         if(wynik.odp === roomdata.get(socket, "poprawnaOdp")){
-            zdobytePunkty++;  
-            if(roomdata.get(socket, "najszybszyCzas")>wynik.czas){
+         if(wynik.odp == roomdata.get(socket, "poprawnaOdp")){
+            zdobytePunkty=zdobytePunkty+1;  
+            if(roomdata.get(socket, "najszybszyCzas")<wynik.czas){
                 roomdata.set(socket, "najszybszyCzas", wynik.czas);
-                zdobytePunkty++;    
+                zdobytePunkty=zdobytePunkty+1;    
             }
              
              //aktualizacja wynikow
-             if(socket.score){
-                 socket.score=socket.score+zdobytePunkty;
-             }else{
+             if(!socket.score){
                  socket.score=zdobytePunkty;
+             }else{
+                 socket.score=socket.score+zdobytePunkty;
              }
          }
-                 
+         
              var punktacja = {
                  user:socket.nickname,
                  razemPkt:socket.score,
@@ -233,9 +230,15 @@ io.sockets.on("connection", function (socket) {
                  poprawnaOdp:roomdata.get(socket, "poprawnaOdp"),
                  opis:roomdata.get(socket, "opis")
              };
-            
+         
          socket.emit("wyswietlOdpowiedz", odpowiedz);             
-    });   
+    }); 
+    
+    socket.on("breakGame", function(){
+        socket.broadcast.to(roomdata.get(socket, "room")).emit("koniecGry", socket.nickname);
+        roomdata.leaveRoom(socket);
+    });
+    
 });
 
 httpServer.listen(port, function () {

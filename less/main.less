@@ -8,6 +8,8 @@
 @czarny: #383838;
 @wysokoscNaglowka: 3em;
 @bg: rgba(255,255,255, 0.8);  
+@orange:orange;
+@green:green;
 
 body {
     background: @niebieski url(@urlTlo) no-repeat fixed center; 
@@ -19,6 +21,7 @@ body {
     border: 5px solid;
     padding: 20px; 
     width: 80%;
+    //min-height: 30em;
     //height: 150px; 
       
     //centrowanie
@@ -84,23 +87,24 @@ body {
 }
 //--------------czat i tablica wynikow-------------------
 #wynikCzat {
-    #wynikCzat{
-        height:14em;
+    //#wynikCzat{
+        height:16em;
         width:100%;
         margin:1em;
-    }
+    //}
    
   #czat, #pktOdp{  
     border: 1px solid;
     margin:1em;
     background-color: @bg;
+    
     }
     
     #czat{  
         width:60%; 
         float:left;
         #rozmowa{
-        height:8em;
+        height:10em;
         overflow-y: scroll;
         
         }
@@ -118,18 +122,18 @@ body {
             }
     }   
     #pktOdp{
-         height:10em;
+        height:12em;
         width:30%;
         float:right;
         *{
-         height:1em;
+          height:1em;
         }
     }   
     
 }
 //------------------gra-----------------------
 #gra{
-    *{
+    & *{
         /*
         text-align: center;
         horizontal-align: middle;
@@ -137,23 +141,46 @@ body {
         margin-bottom:1em;
         margin:auto;
         */
-        width:100%;    
+        width:100%;
     }
     
     #nrPyt{
         text-align:center;
+        margin:1em;
+    }
+    
+    #czas{
+        width:100%;
+        background-color: @bg;
+        margin-bottom:1em;
+        margin-top:1em;
+        border: 1px solid;
+        border-radius:5px;
+        border-color:@czarny;
+        height:22px;
     }
     
     #pyt{
         border-radius: 5px;
         border: 1px solid;
-        padding:1em;
+        padding:2em;
     }
     
-    input{
+    & input{
         width:100%;
         text-align:center;
+        margin-bottom:0.5em;
+        margin-top:0.5em;
+        padding:0.5em;
     }   
+}
+
+.btnTrue{
+   color:@green;     
+}
+
+.btnCheck{
+   color:@orange;    
 }
 
 #wynik{
