@@ -149,12 +149,14 @@ $(document).ready(function(){
         
         $('#nrPyt').text(nrPyt + "/10");
         
-        $('#a0').val(pytanie.odp[0]);
-        $('#b1').val(pytanie.odp[1]);
-        $('#c2').val(pytanie.odp[2]);
+        $('#i0').val(pytanie.odp[0]);
+        $('#i1').val(pytanie.odp[1]);
+        $('#i2').val(pytanie.odp[2]);
         
         $('#pyt').text(pytanie.pyt);
-        interval=setInterval(function(){ showBar(time); }, 1000); 
+        interval=setInterval(function(){ showBar(time); }, 1000);
+        
+        console.log(pytanie);
     });
     
     $('#odp').children().click(function(){
@@ -174,8 +176,8 @@ $(document).ready(function(){
         opisOdp.text(odpowiedz.opis);
         $('#opisOdp').after(o_nastPyt);
        
-        var odp = $('#odp').children();
-        odp[odpowiedz.poprawnaOdp].addClass("btnTrue");
+        //var odp = $('#odp').children();
+        $('[id$='+odpowiedz.poprawnaOdp+']').addClass("btnTrue");
      });
     
     nastPyt.click(function(){
@@ -187,21 +189,21 @@ $(document).ready(function(){
     socket.on("koniecGry", function(user){
         var tekst;
         if(nrPyt===10){
-        tekst="Niestety, użytkownik " + user + "opuścił pokój... Gra została przerwana";
+            tekst = "Brawo ukończyliście kurs ;) Gratulacje dla zwycięzcy!";     
         }else{
-            tekst = "Brawo ukończyliście kurs ;) Gratulacje dla zwycięzcy!";
+            tekst="Niestety, użytkownik " + user + " opuścił pokój... Gra została przerwana";
         }
         
          o_gra=$('#gra').contents().detach();
          o_nastPyt  = $('#nastPyt').detach();
-         opisOdp.text("koniec gry!");    
+         opisOdp.text(tekst);    
      });
     
 //-------przed zamknieciem strony-------------------    
 var myEvent = window.attachEvent || window.addEventListener;
 var chkevent = window.attachEvent ? 'onbeforeunload' : 'beforeunload'; 
         myEvent(chkevent, function(e) {
-            socket.emit("breakGame");      
+            socket.emit("breakGame", nick);      
         });
 
     //odepnij niepotrzebne elementy
@@ -226,6 +228,7 @@ var showBar=function(){
         time=time+1;
         }else{
             socket.emit("sprawdzOdpowiedz", {odp:-1, czas:time+1});
+            clearInterval(interval);
         }
     };
 

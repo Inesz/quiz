@@ -190,7 +190,7 @@ io.sockets.on("connection", function (socket) {
                 pyt : doc.pytanie,
                 odp : odpowiedzi
             }; 
-            
+
             //zapisujemy odpowiedz
             roomdata.set(socket, "poprawnaOdp", odpowiedzi.indexOf(doc.poprawnaOdp));
             roomdata.set(socket, "opis", doc.opis);
@@ -234,9 +234,9 @@ io.sockets.on("connection", function (socket) {
          socket.emit("wyswietlOdpowiedz", odpowiedz);             
     }); 
     
-    socket.on("breakGame", function(){
-        socket.broadcast.to(roomdata.get(socket, "room")).emit("koniecGry", socket.nickname);
-        roomdata.leaveRoom(socket);
+    socket.on("breakGame", function(nick){
+        socket.broadcast.to(roomdata.get(socket, "room")).emit("koniecGry", nick);
+        //roomdata.leaveRoom(socket);
     });
     
 });
